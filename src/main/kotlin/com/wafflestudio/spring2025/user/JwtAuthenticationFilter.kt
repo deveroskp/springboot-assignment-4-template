@@ -11,7 +11,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Component
 class JwtAuthenticationFilter(
     private val jwtTokenProvider: JwtTokenProvider,
-    private val redisTemplate: StringRedisTemplate
+    private val redisTemplate: StringRedisTemplate,
 ) : OncePerRequestFilter() {
     private val pathMatcher = AntPathMatcher()
 
