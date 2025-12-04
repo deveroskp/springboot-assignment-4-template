@@ -60,6 +60,13 @@ class UserService(
         user: User,
         token: String,
     ) {
-        TODO()
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw AuthenticateException()
+        }
+
+        val expiration = jwtTokenProvider.getExpiration(token)
+        val currentTime = System.currentTimeMillis()
+        val expirationDuration = expiration - currentTime
+        redisTemplate.opsForValue().set(token, "logged_out", expirationDuration)
     }
 }

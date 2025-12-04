@@ -3,6 +3,7 @@ package com.wafflestudio.spring2025.user
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 import org.springframework.util.AntPathMatcher
 import org.springframework.web.filter.OncePerRequestFilter
@@ -10,6 +11,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Component
 class JwtAuthenticationFilter(
     private val jwtTokenProvider: JwtTokenProvider,
+    private val redisTemplate: StringRedisTemplate
 ) : OncePerRequestFilter() {
     private val pathMatcher = AntPathMatcher()
 
@@ -26,6 +28,10 @@ class JwtAuthenticationFilter(
         val token = resolveToken(request)
 
         if (token != null && jwtTokenProvider.validateToken(token)) {
+            if (redisTemplate.hasKey(token)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token has been logged out")
+                return
+            }
             val username = jwtTokenProvider.getUsername(token)
             request.setAttribute("username", username)
         } else {
