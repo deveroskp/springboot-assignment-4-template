@@ -54,4 +54,4 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            sudo k3s kubectl rollout restart deployment/my-app-deployment
+            sudo k3s kubectl rollout restart deployment/spring-app
